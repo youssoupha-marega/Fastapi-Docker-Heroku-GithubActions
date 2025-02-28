@@ -1,0 +1,42 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # ✅ INSTALLATION DU CLI HEROKU
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      # ✅ VÉRIFIER QUE HEROKU EST INSTALLÉ
+      - name: Check Heroku CLI version
+        run: heroku --version
+
+      # ✅ SE CONNECTER À HEROKU AVEC LA CLÉ API
+      - name: Login to Heroku
+        run: heroku auth:token
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      # ✅ SE CONNECTER À HEROKU CONTAINER REGISTRY
+      - name: Login to Heroku Container Registry
+        run: echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
+
+      # ✅ CONSTRUIRE ET PUSHER L'IMAGE DOCKER
+      - name: Build and Push Docker Image to Heroku
+        run: heroku container:push web --app ${{ secrets.HEROKU_APP_NAME }}
+
+      # ✅ LANCER L'IMAGE SUR HEROKU
+      - name: Release Docker Image on Heroku
+        run: heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
+
+      # ✅ AFFICHER LES LOGS HEROKU (OPTIONNEL)
+      #- name: Get Heroku logs
+      #  run: heroku logs --app ${{ secrets.HEROKU_APP_NAME }} --tail

@@ -4,7 +4,7 @@ app = FastAPI()
 
 @app.get("/")
 def index():
-    return{"details":"hello Misa jour okay, world!"}
+    return{"details":"hello Mise à jour okay, world!"}
     
     
 ## Executer la commande suivante pour voir l'application : uvicorn main:app --reload --host 0.0.0.0 --port 8000
