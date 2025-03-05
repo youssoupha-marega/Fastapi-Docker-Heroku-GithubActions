@@ -3,9 +3,14 @@
 ## Pour la documentation l'app disponible http://127.0.0.1:8000/docs
 
 
-from fastapi import FastAPI
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from datetime import datetime
+from dotenv import load_dotenv
+from src.dataset import fetch_data_raw, ouvrir_tunnel
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
+
 
 app = FastAPI()
 
@@ -72,4 +77,53 @@ def presente_toi(nom: str, prenom: str, date_naissance: str, profession: str, sa
 
     return {"Mon message subliminale": response}
 
+
+# ✅ Groupe d'endpoints "Extraction"
+@app.get("/extraction", tags=["Extraction"])
+def extraction(db_name: str, tb_name: str, var_names: str, debut:str, fin:str):
+    """
+    Cette fonction retourne les données d'une variable d'une base de données et d'une table.
+
+    ### Paramètres :
+    - `db_name` : Nom de la base de données (ex: `"saint_esprit"`).
+    - `tb_name` : Nom de la table (ex: `"stesp_p_usine_fl"`).
+    - `var_names` : Nom de la variable à extraire (ex: `"debit_stesprit"`).
+    - `debut` : Date de début au format `"YYYY-MM-DD HH:MM:SS"` (ex: `"2024-02-14 12:01:02"`).
+    - `fin` : Date de fin au format `"YYYY-MM-DD HH:MM:SS"` (ex: `"2024-02-14 13:01:02"`).
+    """
+
+    #-----------------------------------------------------# 
+    # Exemple d'utilisation de la fonction fetch_data_raw #
+    #-----------------------------------------------------#
+    #tunnel = ouvrir_tunnel()
+
+    #db_name = 'saint_esprit'
+    #tb_name = 'stesp_p_usine_fl'
+    #var_names = ['debit_stesprit']
+
+    # Définir des dates d'exemple pour l'extraction
+    #debut = datetime(2024, 1, 1, 6, 55, 5)
+    #fin = datetime(2024, 1, 1, 9, 46, 59)
+
+    # Appel de la fonction d'extraction
+    #debit_stesprit = fetch_data_raw(tunnel, db_name, tb_name, var_names, debut, fin)
+    
+    
+    try:
+        # ✅ Vérification du format des dates
+        debut = datetime.strptime(debut, "%Y-%m-%d %H:%M:%S")
+        fin = datetime.strptime(fin, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Format de date invalide. Utilisez 'YYYY-MM-DD HH:MM:SS'.")
+    
+    tunnel = ouvrir_tunnel()
+
+    var_names_list = [var_names]
+
+    # Appel de la fonction d'extraction
+    fetch_data = fetch_data_raw(tunnel, db_name, tb_name, var_names_list, debut, fin)
+    
+    return {var_names: fetch_data}
+        
+    
     

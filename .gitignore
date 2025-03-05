@@ -172,12 +172,20 @@ cython_debug/
 .pypirc
 
 
-# 🚀 Ignorer les fichiers inutiles
-git rm -r --cached '[web' '[web]' fa.venv
+# 🚀 Ignorer les fichiers inutiles.
 
-
-\[web]/
-\[web/
+\[web\]
+\[web
+'[web'
 fa.venv/
+CACHED
+
+#git rm -r --cached CACHED .py
+#git commit -m "Remove CACHED .py from version control"
+#git push origin main
+
+
+
+
 
 

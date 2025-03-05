@@ -9,3 +9,9 @@ services:
       - 8000:8000
     volumes:
       - .:/appp
+    env_file:
+      - .env
+    # ou utiliser des variables inline (même si c'est moins pratique pour gérer la prod):
+    # environment:
+    #   - SECRET_KEY=${SECRET_KEY}
+    #   - DATABASE_URL=${DATABASE_URL}
